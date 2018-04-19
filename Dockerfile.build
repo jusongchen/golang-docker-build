@@ -1,0 +1,23 @@
+ARG GOLANG_DOCKER_IMAGE
+FROM ${GOLANG_DOCKER_IMAGE} AS build-env
+#FROM dva-registry.internal.salesforce.com/dva/golang:7 AS build-env
+#FROM golang:alpine AS build-env
+
+ARG APP
+ARG REPO
+ARG GOOS=linux
+ARG GOARCH=amd64
+ARG PROJECT
+ARG RELEASE
+ARG COMMIT
+ARG BUILD_TIME
+
+#RUN apk add --update gcc musl-dev # uncomment this line if GCC is required
+WORKDIR $REPO 
+COPY *.go ./
+RUN cd $REPO && CGO_ENABLED=0 GOOS=${GOOS} GOARCH=${GOARCH} go build \
+    -ldflags "-s -w -X ${PROJECT}/version.Release=${RELEASE} \
+    -X ${PROJECT}/version.Commit=${COMMIT} -X ${PROJECT}/version.BuildTime=${BUILD_TIME}" \
+    -installsuffix cgo \
+    -o ${APP}
+
