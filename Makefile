@@ -51,22 +51,27 @@ docker-build: clean
 	docker cp $(BUILD_CONTAINER):$(REPO)/$(APP) .
 	docker rm -f $(BUILD_CONTAINER)
 
-run-darwin:build-darwin
+run-darwin: build-darwin
 	./${APP}
 
-docker-build-and-run:docker-build
+run-linux: go-build
 	./${APP}
 
-go-build-and-run:go-build
-	./${APP}
-
-container: docker-build
+go-build-container: go-build
 	docker build -t $(CONTAINER_IMAGE):$(RELEASE) -f Dockerfile --build-arg APP=$(APP) --build-arg BIN_HOME=$(BIN_HOME)  .
 
-docker-run: container
+docker-build-container: docker-build
+	docker build -t $(CONTAINER_IMAGE):$(RELEASE) -f Dockerfile --build-arg APP=$(APP) --build-arg BIN_HOME=$(BIN_HOME)  .
+
+docker-run-docker-build: docker-build-container
 	docker stop $(APP):$(RELEASE) || true && docker rm $(APP):$(RELEASE) || true
 	docker run -it -u 7447:7447 --name ${APP} -p ${PORT}:${PORT} --rm -e "PORT=${PORT}" $(APP):$(RELEASE) $(BIN_HOME)/$(APP)
 	# docker run -it -u 7447:7447 --name ${APP} -p ${PORT}:${PORT}  -e "PORT=${PORT}" $(APP):$(RELEASE)
 
-push: container
-	docker push $(CONTAINER_IMAGE):$(RELEASE)
+docker-run-go-build: go-build-container
+	docker stop $(APP):$(RELEASE) || true && docker rm $(APP):$(RELEASE) || true
+	docker run -it -u 7447:7447 --name ${APP} -p ${PORT}:${PORT} --rm -e "PORT=${PORT}" $(APP):$(RELEASE) $(BIN_HOME)/$(APP)
+	# docker run -it -u 7447:7447 --name ${APP} -p ${PORT}:${PORT}  -e "PORT=${PORT}" $(APP):$(RELEASE)
+
+# push: container
+# 	docker push $(CONTAINER_IMAGE):$(RELEASE)
