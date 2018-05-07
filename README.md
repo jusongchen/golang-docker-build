@@ -1,19 +1,4 @@
-# The Ursa Project
-
-## Introduction
-The DSP team run Oracle RAT workload in Q-Labs to provide qualification service. The Oracle RAT replay process has three stages:
-* Capture the Workload in the production system
-* Set the RAT workload in a Q-Lab
-* Run the RAT workload in the Q-Lab
-
-Currently, most of the operations during the RAT workload setting stage are done manually. Those manual steps are time consuming and there is high risk that we cannot meet GDPR requirements as number of Q-Labs increases.
-
-## Project Scope , Goal and Code Name
-
-The project scope is to automate manual operations during the RAT workload setting stage on the Oracle RAT replay process to reduce human hours and human errors. The project code name is Ursa.
-
-
-# How to build
+# The starter program
 
 This starter program is written in Go. After a success build, an executable (named ursa) is generated in the root of this repository.
 
